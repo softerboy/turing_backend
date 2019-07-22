@@ -1,0 +1,52 @@
+{
+  "name": "turing-backend",
+  "version": "1.0.0",
+  "description": "A backend API for turing full stack challenge",
+  "main": "src/app.js",
+  "author": "Fakhriddin Umarov",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "nodemon src/app.js",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-koa": "^2.0.2",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "husky": "^3.0.1",
+    "lint-staged": "^9.2.0",
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2"
+  },
+  "dependencies": {
+    "apollo-server-koa": "^2.7.0",
+    "dotenv-flow": "^3.0.0",
+    "graphql": "^14.4.2",
+    "graphql-import": "^0.7.1",
+    "koa": "^2.7.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.(js)": [
+      "prettier --single-quote --write",
+      "git add"
+    ]
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "storage/**",
+      "test/*"
+    ]
+  }
+}
