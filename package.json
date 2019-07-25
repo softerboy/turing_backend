@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "apollo-server-koa": "^2.7.0",
+    "async-validator": "^1.11.5",
     "dotenv-flow": "^3.0.0",
     "graphql": "^14.4.2",
     "graphql-import": "^0.7.1",
