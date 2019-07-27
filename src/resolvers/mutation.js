@@ -1,4 +1,4 @@
-const customer = require('../controllers')
+const { customer } = require('../controllers')
 
 module.exports = {
   customerRegister(parent, formData, context, info) {
