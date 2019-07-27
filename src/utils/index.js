@@ -1,5 +1,6 @@
 const graphqlFields = require('graphql-fields')
 const get = require('lodash.get')
+const jwt = require('jsonwebtoken')
 
 module.exports = {
   /**
@@ -20,5 +21,11 @@ module.exports = {
     }
 
     return Object.keys(result).filter(key => !exclude.includes(key))
+  },
+
+  createToken(payload, secret, expiresIn) {
+    if (!secret) secret = process.env.JWT_SECRET
+    if (!expiresIn) expiresIn = process.env.JWT_EXPIRES_IN
+    return jwt.sign(payload, secret, { expiresIn })
   },
 }

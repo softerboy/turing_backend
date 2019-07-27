@@ -5,14 +5,19 @@ const { ApolloServer } = require('apollo-server-koa')
 const { importSchema } = require('graphql-import')
 
 const typeDefs = importSchema('src/schema.graphql')
+const passportJwtMiddleware = require('./auth/passport-jwt')
 const resolvers = require('./resolvers')
 const db = require('./db')
 
-const context = {
+const context = ({ ctx: koaCtx }) => ({
   db,
-}
+  koaCtx,
+})
 
 const app = new Koa()
+// setup passport middleware
+app.use(passportJwtMiddleware)
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,

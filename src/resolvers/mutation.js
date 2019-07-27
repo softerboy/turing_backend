@@ -1,4 +1,4 @@
-const customer = require('../dao')
+const customer = require('../controllers')
 
 module.exports = {
   customerRegister(parent, formData, context, info) {
