@@ -1,10 +1,6 @@
 /* eslint-disable camelcase */
-const {
-  UserInputError,
-  ApolloError,
-  AuthenticationError,
-  ValidationError,
-} = require('apollo-server-koa')
+const { handleError } = require('../utils/error-handler')
+const { AuthenticationError } = require('apollo-server-koa')
 
 const { fieldsToColumns, createToken, md5 } = require('../utils')
 const {
@@ -14,10 +10,11 @@ const {
 
 const generateAccessToken = customer_id => {
   const expires_in = process.env.JWT_EXPIRES_IN
-
   const accessToken = createToken({ customer_id }, null, expires_in)
   return { expires_in, accessToken }
 }
+
+const outsideColumns = ['__typename', 'accessToken', 'expires_in']
 
 module.exports = {
   async add(parent, customer, { db, koaCtx }, info) {
@@ -41,11 +38,7 @@ module.exports = {
       // select just an asked columns
       // delete accessToken, expires_in and __typename fields
       // because they doesn't exists in database table
-      let columns = fieldsToColumns(info, undefined, [
-        '__typename',
-        'accessToken',
-        'expires_in',
-      ])
+      let columns = fieldsToColumns(info, undefined, outsideColumns)
 
       // anyway include customer_id column,
       // it used as payload in jwt token
@@ -65,30 +58,7 @@ module.exports = {
       // set status code to BAD_REQUEST
       koaCtx.response.status = 400
 
-      /* eslint-disable prettier/prettier, no-prototype-builtins */
-      if (err instanceof ValidationError) {
-        // this is a async validator error object
-        throw new UserInputError('Invalid arguments', {
-          errors: err.errors,
-        })
-      } else if (err instanceof Error && err.code === 'ER_DUP_ENTRY') {
-        // handle duplicate email entry
-        const errors = [
-          {
-            code: 'USR_04',
-            message: 'Email already exists',
-            field: 'email',
-            status: 400,
-          },
-        ]
-
-        throw new UserInputError('Email already exists', {
-          errors,
-        })
-      }
-
-      // just rethrow error
-      throw err
+      handleError(err)
     }
   },
 
@@ -99,11 +69,7 @@ module.exports = {
       // will be thrown
       await validateLoginForm({ email, password })
 
-      let columns = fieldsToColumns(info, undefined, [
-        '__typename',
-        'accessToken',
-        'expires_in',
-      ])
+      let columns = fieldsToColumns(info, undefined, outsideColumns)
 
       // anyway include 'password' and 'customer_id' columns,
       // they are used for comparing form's password and
@@ -116,50 +82,26 @@ module.exports = {
         .where({ email })
         .from('customer')
 
-      if (dbCustomer) {
-        // customer by given email found
-        // check, are passwords match?
-        const hash = md5(password)
-        if (hash === dbCustomer.password) {
-          const { customer_id } = dbCustomer
-          const { expires_in, accessToken } = generateAccessToken(customer_id)
-
-          return {
-            ...dbCustomer,
-            expires_in,
-            accessToken,
-          }
-        } else {
-          // passwords don't match, reject
-          throw new AuthenticationError('Email or Password is invalid')
-        }
-      } else {
+      if (!dbCustomer)
         // user not found by given email, reject!
         throw new AuthenticationError('Email or Password is invalid')
+
+      // customer by given email found
+      // check, are passwords match?
+      const hash = md5(password)
+      if (hash === dbCustomer.password) {
+        const { customer_id } = dbCustomer
+        const { expires_in, accessToken } = generateAccessToken(customer_id)
+
+        return { ...dbCustomer, expires_in, accessToken }
       }
+
+      // passwords don't match, reject
+      throw new AuthenticationError('Email or Password is invalid')
     } catch (err) {
       koaCtx.response.status = 400
 
-      if (err instanceof ValidationError) {
-        throw new UserInputError('Invalid email or password', {
-          errors: err.errors,
-        })
-      } else if (err instanceof AuthenticationError) {
-        const errors = [
-          {
-            code: 'USR_01',
-            message: 'Email or Password is invalid',
-            field: 'email',
-            status: 400,
-          },
-        ]
-        throw new ApolloError('Email or Password is invalid', 'USR_01', {
-          errors,
-        })
-      }
-
-      // rethrow error
-      throw err
+      handleError(err)
     }
   },
 }
