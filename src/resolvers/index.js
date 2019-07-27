@@ -1,5 +1,5 @@
+const Mutation = require('./mutation')
+
 module.exports = {
-  Query: {
-    test: () => 'Hello world',
-  },
+  Mutation,
 }

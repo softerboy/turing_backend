@@ -6,6 +6,11 @@ const { importSchema } = require('graphql-import')
 
 const typeDefs = importSchema('src/schema.graphql')
 const resolvers = require('./resolvers')
+const db = require('./db')
+
+const context = {
+  db,
+}
 
 const app = new Koa()
 const server = new ApolloServer({
@@ -13,6 +18,7 @@ const server = new ApolloServer({
   resolvers,
   introspection: true,
   playground: true,
+  context,
 })
 
 server.applyMiddleware({ app })

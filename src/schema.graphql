@@ -1,3 +1,30 @@
 type Query {
   test: String
 }
+
+type Mutation {
+  customerRegister(
+    name: String!
+    email: String!
+    password: String!
+  ): RegisterResponse
+}
+
+type RegisterResponse {
+  customer_id: Int!
+  name: String!
+  email: String!
+  address_1: String
+  address_2: String
+  city: String
+  region: String
+  postal_code: String
+  country: String
+  shipping_region_id: Int!
+  day_phone: String
+  eve_phone: String
+  mob_phone: String
+  credit_card: String
+  accessToken: String!
+  expires_in: String!
+}

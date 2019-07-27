@@ -1,10 +1,13 @@
-const { UserInputError } = require('apollo-server-koa')
 const Schema = require('async-validator')
 
 module.exports = {
   validateRegisterForm(customer) {
-    const err = (message, code, field, status = 400) =>
-      new UserInputError(message, { code, field, status })
+    const err = (message, code, field, status = 400) => ({
+      message,
+      code,
+      field,
+      status,
+    })
 
     const descriptor = {
       // a name field rules

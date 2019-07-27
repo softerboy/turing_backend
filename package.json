@@ -7,7 +7,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon src/app.js",
+    "dev": "NODE_ENV=local nodemon src/app.js",
+    "start": "NODE_ENV=production node src/app.js",
     "test": "NODE_ENV=test jest",
     "lint": "eslint ."
   },
@@ -32,9 +33,11 @@
     "async-validator": "^1.11.5",
     "dotenv-flow": "^3.0.0",
     "graphql": "^14.4.2",
+    "graphql-fields": "^2.0.3",
     "graphql-import": "^0.7.1",
     "knex": "^0.19.1",
     "koa": "^2.7.0",
+    "lodash.get": "^4.4.2",
     "mysql": "^2.17.1",
     "mysql2": "^1.6.5"
   },
