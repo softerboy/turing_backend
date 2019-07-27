@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 const { UserInputError } = require('apollo-server-koa')
 
-const { fieldsToColumns, createToken } = require('../utils')
+const { fieldsToColumns, createToken, md5 } = require('../utils')
 const { validateRegisterForm } = require('../validators/customer')
 
 module.exports = {
@@ -13,6 +13,9 @@ module.exports = {
       // if validation fails, an exception
       // will be thrown
       await validateRegisterForm(customer)
+
+      // hash user password before save
+      customer.password = md5(customer.password)
 
       // 2) insert customer into database
       // if email already exists, an exception

@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 const graphqlFields = require('graphql-fields')
 const get = require('lodash.get')
 const jwt = require('jsonwebtoken')
@@ -27,5 +28,12 @@ module.exports = {
     if (!secret) secret = process.env.JWT_SECRET
     if (!expiresIn) expiresIn = process.env.JWT_EXPIRES_IN
     return jwt.sign(payload, secret, { expiresIn })
+  },
+
+  md5(str) {
+    return crypto
+      .createHash('md5')
+      .update(str)
+      .digest('hex')
   },
 }
