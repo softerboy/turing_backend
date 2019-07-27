@@ -1,8 +1,23 @@
 /* eslint-disable camelcase */
-const { UserInputError } = require('apollo-server-koa')
+const {
+  UserInputError,
+  ApolloError,
+  AuthenticationError,
+  ValidationError,
+} = require('apollo-server-koa')
 
 const { fieldsToColumns, createToken, md5 } = require('../utils')
-const { validateRegisterForm } = require('../validators/customer')
+const {
+  validateRegisterForm,
+  validateLoginForm,
+} = require('../validators/customer')
+
+const generateAccessToken = customer_id => {
+  const expires_in = process.env.JWT_EXPIRES_IN
+
+  const accessToken = createToken({ customer_id }, null, expires_in)
+  return { expires_in, accessToken }
+}
 
 module.exports = {
   async add(parent, customer, { db, koaCtx }, info) {
@@ -39,9 +54,7 @@ module.exports = {
       // 3) generate a jwt access token
       const savedCustomer = await db.first(columns).from(tableName)
       const { customer_id } = savedCustomer
-      const expires_in = process.env.JWT_EXPIRES_IN
-
-      const accessToken = createToken({ customer_id }, null, expires_in)
+      const { expires_in, accessToken } = generateAccessToken(customer_id)
 
       return {
         ...savedCustomer,
@@ -53,7 +66,7 @@ module.exports = {
       koaCtx.response.status = 400
 
       /* eslint-disable prettier/prettier, no-prototype-builtins */
-      if (err instanceof Object && err.hasOwnProperty('errors')) {
+      if (err instanceof ValidationError) {
         // this is a async validator error object
         throw new UserInputError('Invalid arguments', {
           errors: err.errors,
@@ -75,6 +88,77 @@ module.exports = {
       }
 
       // just rethrow error
+      throw err
+    }
+  },
+
+  async login(parent, { email, password }, { db, koaCtx }, info) {
+    try {
+      // 1) validate login form
+      // if validation fails, an exception
+      // will be thrown
+      await validateLoginForm({ email, password })
+
+      let columns = fieldsToColumns(info, undefined, [
+        '__typename',
+        'accessToken',
+        'expires_in',
+      ])
+
+      // anyway include 'password' and 'customer_id' columns,
+      // they are used for comparing form's password and
+      // signing jwt token
+      columns = Array.from(new Set(columns.concat(['password', 'customer_id'])))
+
+      // 2) find user by email
+      const dbCustomer = await db
+        .first(columns)
+        .where({ email })
+        .from('customer')
+
+      if (dbCustomer) {
+        // customer by given email found
+        // check, are passwords match?
+        const hash = md5(password)
+        if (hash === dbCustomer.password) {
+          const { customer_id } = dbCustomer
+          const { expires_in, accessToken } = generateAccessToken(customer_id)
+
+          return {
+            ...dbCustomer,
+            expires_in,
+            accessToken,
+          }
+        } else {
+          // passwords don't match, reject
+          throw new AuthenticationError('Email or Password is invalid')
+        }
+      } else {
+        // user not found by given email, reject!
+        throw new AuthenticationError('Email or Password is invalid')
+      }
+    } catch (err) {
+      koaCtx.response.status = 400
+
+      if (err instanceof ValidationError) {
+        throw new UserInputError('Invalid email or password', {
+          errors: err.errors,
+        })
+      } else if (err instanceof AuthenticationError) {
+        const errors = [
+          {
+            code: 'USR_01',
+            message: 'Email or Password is invalid',
+            field: 'email',
+            status: 400,
+          },
+        ]
+        throw new ApolloError('Email or Password is invalid', 'USR_01', {
+          errors,
+        })
+      }
+
+      // rethrow error
       throw err
     }
   },

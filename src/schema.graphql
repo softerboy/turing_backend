@@ -8,6 +8,12 @@ type Mutation {
     email: String!
     password: String!
   ): RegisterResponse
+
+  # prettier-ignore
+  customerLogin(
+    email: String!
+    password: String!
+  ): RegisterResponse
 }
 
 type RegisterResponse {

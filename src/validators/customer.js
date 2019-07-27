@@ -1,14 +1,37 @@
 const Schema = require('async-validator')
+const { ValidationError } = require('apollo-server-koa')
+
+const err = (message, code, field, status = 400) => ({
+  message,
+  code,
+  field,
+  status,
+})
+
+const errWrapper = err => {
+  const error = new ValidationError('Validation failed')
+  error.errors = err.errors
+
+  return error
+}
+
+const email = [
+  {
+    required: true,
+    message: err('The email is required', 'USR_02', 'email'),
+  },
+  {
+    type: 'email',
+    message: err('Invalid email', 'USR_07', 'email'),
+  },
+  {
+    max: 100,
+    message: err('Email is too long', 'USR_07', 'email'),
+  },
+]
 
 module.exports = {
-  validateRegisterForm(customer) {
-    const err = (message, code, field, status = 400) => ({
-      message,
-      code,
-      field,
-      status,
-    })
-
+  validateRegisterForm(registerForm) {
     const descriptor = {
       // a name field rules
       name: [
@@ -38,20 +61,7 @@ module.exports = {
       ],
 
       // an email field rules
-      email: [
-        {
-          required: true,
-          message: err('The email is required', 'USR_02', 'email'),
-        },
-        {
-          type: 'email',
-          message: err('Invalid email', 'USR_07', 'email'),
-        },
-        {
-          max: 100,
-          message: err('Email is too long', 'USR_07', 'email'),
-        },
-      ],
+      email,
 
       // a password field rules
       password: [
@@ -102,6 +112,25 @@ module.exports = {
       ],
     }
 
-    return new Schema(descriptor).validate(customer)
+    return new Schema(descriptor).validate(registerForm).catch(err => {
+      throw errWrapper(err)
+    })
+  },
+
+  validateLoginForm(loginForm) {
+    const descriptor = {
+      email: email,
+
+      // the required rule is enough
+      // to validating password here
+      password: {
+        required: true,
+        message: err('The password is required', 'USR_02', 'password'),
+      },
+    }
+
+    return new Schema(descriptor).validate(loginForm).catch(err => {
+      throw errWrapper(err)
+    })
   },
 }
