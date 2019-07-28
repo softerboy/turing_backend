@@ -1,10 +1,19 @@
-const { ExtractJwt, Strategy } = require('passport-jwt')
+const { Strategy } = require('passport-jwt')
 const koaPassport = require('koa-passport')
 
 const db = require('../db')
 
+const extractor = request => {
+  // koa uses lowercase header names
+  if (request.headers && request.headers['user-key']) {
+    return request.headers['user-key'].replace('Bearer ', '')
+  }
+
+  return null
+}
+
 const options = {
-  jwtFromRequest: ExtractJwt.fromHeader('USER-KEY'),
+  jwtFromRequest: extractor,
   secretOrKey: process.env.JWT_SECRET,
 }
 
@@ -32,7 +41,7 @@ const jwtMiddleware = async (ctx, next) => {
     'jwt',
     // authentication handler callback
     // eslint-disable-next-line
-    function(err, user) {
+    (err, user) => {
       if (user) ctx.customer = user
       return next()
     },

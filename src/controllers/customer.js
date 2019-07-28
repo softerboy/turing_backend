@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-const { handleError } = require('../utils/error-handler')
 const { AuthenticationError } = require('apollo-server-koa')
 
+const { handleError } = require('../utils/error-handler')
 const { fieldsToColumns, createToken, md5 } = require('../utils')
 const {
   validateRegisterForm,

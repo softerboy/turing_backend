@@ -1,5 +1,4 @@
-const Mutation = require('./mutation')
-
 module.exports = {
-  Mutation,
+  Mutation: require('./mutation'),
+  Query: require('./query'),
 }

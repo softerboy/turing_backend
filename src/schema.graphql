@@ -1,5 +1,7 @@
 type Query {
-  test: String
+  # returns current logged in user data
+  # or null if user not loggen in
+  me: RegisterResponse
 }
 
 type Mutation {
