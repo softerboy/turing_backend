@@ -45,6 +45,12 @@ describe('Customer mutation', () => {
     }
   `
 
+  const CUSTOMER_LOGOUT = `
+    mutation CustomerLogout {
+      customerLogout
+    }
+  `
+
   const variables = {
     name: 'jane',
     email: 'jane@doe.com',
@@ -101,6 +107,13 @@ describe('Customer mutation', () => {
     expect(name).toBe(variables.name)
     expect(email).toBe(variables.email)
     expect(accessToken.length).toBeGreaterThan(10)
+  })
+
+  it('should logout', async () => {
+    const response = await tester(JSON.stringify({ query: CUSTOMER_LOGOUT }))
+
+    expect(response.status).toBe(200)
+    expect(response.data.customerLogout).toBe(true)
   })
 
   afterAll(() => db.destroy())

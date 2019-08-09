@@ -8,4 +8,8 @@ module.exports = {
   customerLogin(parent, formData, context, info) {
     return customer.login(parent, formData, context, info)
   },
+
+  customerLogout(parent, args, context) {
+    return customer.logout(parent, args, context)
+  },
 }

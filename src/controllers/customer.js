@@ -104,4 +104,12 @@ module.exports = {
       handleError(err)
     }
   },
+
+  async logout(parent, args, { koaCtx }) {
+    // Invoking logout() will remove the current user data
+    // and clear the login session (if any).
+    koaCtx.customer = null
+
+    return true
+  },
 }
