@@ -3,6 +3,8 @@ type Query {
   # or null if user not loggen in
   me: RegisterResponse
   departments: [Department]
+
+  attributes(name: String): [Attribute]
 }
 
 type Mutation {
@@ -53,4 +55,10 @@ type Category {
   department_id: Int!
   name: String!
   description: String
+}
+
+type Attribute {
+  attribute_id: Int!
+  name: String!
+  value: String!
 }

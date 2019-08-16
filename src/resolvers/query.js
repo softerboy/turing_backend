@@ -1,5 +1,5 @@
 const { createToken } = require('../utils')
-const { department } = require('../controllers')
+const { department, attribute } = require('../controllers')
 
 module.exports = {
   me(parent, args, { koaCtx }) {
@@ -17,5 +17,9 @@ module.exports = {
 
   departments(parent, args, context, info) {
     return department.all(parent, args, context, info)
+  },
+
+  attributes(parent, args, context) {
+    return attribute.all(parent, args, context)
   },
 }
