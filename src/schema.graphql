@@ -2,6 +2,7 @@ type Query {
   # returns current logged in user data
   # or null if user not loggen in
   me: RegisterResponse
+  departments: [Department]
 }
 
 type Mutation {
@@ -38,4 +39,18 @@ type RegisterResponse {
   credit_card: String
   accessToken: String!
   expires_in: String!
+}
+
+type Department {
+  department_id: Int!
+  name: String!
+  description: String
+  categories: [Category]
+}
+
+type Category {
+  category_id: Int!
+  department_id: Int!
+  name: String!
+  description: String
 }

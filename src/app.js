@@ -6,12 +6,14 @@ const { importSchema } = require('graphql-import')
 
 const typeDefs = importSchema('src/schema.graphql')
 const passportJwtMiddleware = require('./auth/passport-jwt')
+const loaders = require('./loaders')
 const resolvers = require('./resolvers')
 const db = require('./db')
 
 const context = ({ ctx: koaCtx }) => ({
   db,
   koaCtx,
+  loaders,
 })
 
 const app = new Koa()

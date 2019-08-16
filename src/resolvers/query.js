@@ -1,4 +1,5 @@
 const { createToken } = require('../utils')
+const { department } = require('../controllers')
 
 module.exports = {
   me(parent, args, { koaCtx }) {
@@ -12,5 +13,9 @@ module.exports = {
       customer.expires_in = process.env.JWT_EXPIRES_IN
     }
     return customer
+  },
+
+  departments(parent, args, context, info) {
+    return department.all(parent, args, context, info)
   },
 }
