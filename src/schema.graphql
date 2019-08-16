@@ -5,6 +5,9 @@ type Query {
   departments: [Department]
 
   attributes(name: String): [Attribute]
+
+  # used by filter's price slider range
+  priceRange: PriceRange!
 }
 
 type Mutation {
@@ -61,4 +64,9 @@ type Attribute {
   attribute_id: Int!
   name: String!
   value: String!
+}
+
+type PriceRange {
+  max: Float!
+  min: Float!
 }
