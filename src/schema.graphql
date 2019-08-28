@@ -8,6 +8,16 @@ type Query {
 
   # used by filter's price slider range
   priceRange: PriceRange!
+
+  products(
+    inCategory: [Int]
+    inColor: [Int]
+    inSize: [Int]
+    inPrice: [Int]
+    sortBy: ProductSort
+    page: Int
+    perPage: Int
+  ): ProductResponse
 }
 
 type Mutation {
@@ -69,4 +79,38 @@ type Attribute {
 type PriceRange {
   max: Float!
   min: Float!
+}
+
+type ProductResponse {
+  metadata: PaginationMetadata
+  data: [Product]
+}
+
+type PaginationMetadata {
+  totalItems: Int!
+  currentPage: Int!
+  pageSize: Int!
+  totalPages: Int!
+  startPage: Int!
+  endPage: Int!
+  startIndex: Int!
+  endIndex: Int!
+  pages: [Int!]
+}
+
+type Product {
+  product_id: Int!
+  name: String!
+  description: String!
+  price: Float!
+  discounted_price: Float!
+  image: String
+  image_2: String
+  thumbnail: String
+  display: Int!
+}
+
+enum ProductSort {
+  name
+  price
 }

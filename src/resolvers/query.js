@@ -26,4 +26,8 @@ module.exports = {
   priceRange(parent, args, context) {
     return product.priceRange(parent, args, context)
   },
+
+  products(parent, args, context, info) {
+    return product.all(parent, args, context, info)
+  },
 }

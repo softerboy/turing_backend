@@ -20,6 +20,16 @@ const db = knex({
     user: DB_USER,
     password: DB_PASSWORD,
   },
+  pool: {
+    min: 2,
+    max: 10,
+    afterCreate: function(conn, cb) {
+      // this will disable sql_mode=only_full_group mode
+      conn.query('SET sql_mode="NO_ENGINE_SUBSTITUTION";', function(err) {
+        cb(err, conn)
+      })
+    },
+  },
 })
 
 module.exports = db
