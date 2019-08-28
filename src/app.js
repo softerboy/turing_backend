@@ -1,8 +1,10 @@
 require('dotenv-flow').config()
 
 const Koa = require('koa')
+const KoaStatic = require('koa-static')
 const { ApolloServer } = require('apollo-server-koa')
 const { importSchema } = require('graphql-import')
+const path = require('path')
 
 const typeDefs = importSchema('src/schema.graphql')
 const passportJwtMiddleware = require('./auth/passport-jwt')
@@ -19,6 +21,7 @@ const context = ({ ctx: koaCtx }) => ({
 const app = new Koa()
 // setup passport middleware
 app.use(passportJwtMiddleware)
+app.use(KoaStatic(path.join(__dirname, '..', 'public')))
 
 const server = new ApolloServer({
   typeDefs,
