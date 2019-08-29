@@ -51,7 +51,7 @@ module.exports = {
     // filter by given color and size
     if (attributes.length) {
       query = query
-        .innerJoin('product_attribute as pa', 'pa.product_id', 'pc.product_id')
+        .innerJoin('product_attribute as pa', 'pa.product_id', 'p.product_id')
         .whereIn('pa.attribute_value_id', attributes)
     }
 
