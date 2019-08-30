@@ -1,7 +1,7 @@
 const DataLoader = require('dataloader')
-const department = require('./department')
 const db = require('../db')
 
 module.exports = {
-  department: department(db, DataLoader),
+  department: require('./department')(db, DataLoader),
+  product: require('./product')(db, DataLoader),
 }

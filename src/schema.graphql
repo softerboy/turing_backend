@@ -108,6 +108,9 @@ type Product {
   image_2: String
   thumbnail: String
   display: Int!
+
+  colors: [Attribute]
+  sizes: [Attribute]
 }
 
 enum ProductSort {

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const { paginate } = require('../utils')
 const { fieldsToColumns } = require('../utils')
 
@@ -26,7 +27,7 @@ module.exports = {
     const { inCategory, inColor, inSize, inPrice, sortBy, page, perPage } = args
 
     const mandatoryFields = ['p.product_id']
-    const outsiderFields = ['__typename', 'product_id']
+    const outsiderFields = ['__typename', 'product_id', 'colors', 'sizes']
 
     const columns = new Set(
       fieldsToColumns(info, 'data', outsiderFields).concat(mandatoryFields),
@@ -91,5 +92,13 @@ module.exports = {
       metadata: paginate(total, page, perPage),
       data: result,
     }
+  },
+
+  colors({ product_id }, args, { loaders }) {
+    return loaders.product.colors.load(product_id)
+  },
+
+  sizes({ product_id }, args, { loaders }) {
+    return loaders.product.sizes.load(product_id)
   },
 }
