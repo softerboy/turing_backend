@@ -30,4 +30,8 @@ module.exports = {
   products(parent, args, context, info) {
     return product.all(parent, args, context, info)
   },
+
+  product(parent, args, context, info) {
+    return product.find(parent, args, context, info)
+  },
 }

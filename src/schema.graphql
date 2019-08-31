@@ -18,6 +18,8 @@ type Query {
     page: Int
     perPage: Int
   ): ProductResponse
+
+  product(product_id: Int!): Product
 }
 
 type Mutation {
@@ -111,6 +113,7 @@ type Product {
 
   colors: [Attribute]
   sizes: [Attribute]
+  categories: [Category]
 }
 
 enum ProductSort {

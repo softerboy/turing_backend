@@ -8,4 +8,8 @@ module.exports = {
   sizes(parent, args, context, info) {
     return product.sizes(parent, args, context, info)
   },
+
+  categories(parent, args, context, info) {
+    return product.categories(parent, args, context, info)
+  },
 }

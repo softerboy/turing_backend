@@ -24,4 +24,17 @@ function loadAttributes(name, db, ids) {
 module.exports = (db, DataLoader) => ({
   colors: new DataLoader(ids => loadAttributes('color', db, ids)),
   sizes: new DataLoader(ids => loadAttributes('size', db, ids)),
+
+  categories: new DataLoader(ids =>
+    db
+      .select()
+      .from('category as c')
+      .innerJoin('product_category as pc', 'pc.category_id', 'c.category_id')
+      .whereIn('pc.product_id', ids)
+      .then(categories =>
+        ids.map(id =>
+          categories.filter(category => category.product_id === id),
+        ),
+      ),
+  ),
 })

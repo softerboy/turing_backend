@@ -101,4 +101,12 @@ module.exports = {
   sizes({ product_id }, args, { loaders }) {
     return loaders.product.sizes.load(product_id)
   },
+
+  categories({ product_id }, args, { loaders }) {
+    return loaders.product.categories.load(product_id)
+  },
+
+  find(parent, { product_id }, { loaders }) {
+    return loaders.query.product.load(product_id)
+  },
 }
