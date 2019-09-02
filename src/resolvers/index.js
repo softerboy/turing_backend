@@ -3,4 +3,5 @@ module.exports = {
   Query: require('./query'),
   Department: require('./department'),
   Product: require('./product'),
+  Review: require('./review'),
 }

@@ -50,4 +50,20 @@ module.exports = {
     // just rethrow it
     throw err
   },
+
+  errorBuilder(message, code, field, status = 400) {
+    return {
+      message,
+      code,
+      field,
+      status,
+    }
+  },
+
+  errorWrapper(err) {
+    const error = new ValidationError('Validation failed')
+    error.errors = err.errors
+
+    return error
+  },
 }

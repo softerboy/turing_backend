@@ -35,6 +35,8 @@ type Mutation {
     password: String!
   ): RegisterResponse
 
+  addProductReview(product_id: Int!, review: String!, rating: Int!): Review
+
   #  return true if logout success
   customerLogout: Boolean
 }
@@ -114,9 +116,32 @@ type Product {
   colors: [Attribute]
   sizes: [Attribute]
   categories: [Category]
+
+  reviews(cursor: String, count: Int): ReviewResponse
 }
 
 enum ProductSort {
   name
   price
+}
+
+type ReviewOwner {
+  customer_id: Int!
+  name: String!
+  email: String!
+}
+
+type Review {
+  review_id: Int!
+  owner: ReviewOwner!
+  product_id: Int!
+  review: String!
+  rating: Int!
+  created_on: String!
+}
+
+type ReviewResponse {
+  data: [Review]
+  # will be null if next page isn't available
+  next_cursor: String
 }

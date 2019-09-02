@@ -1,4 +1,4 @@
-const { customer } = require('../controllers')
+const { customer, product } = require('../controllers')
 
 module.exports = {
   customerRegister(parent, formData, context, info) {
@@ -11,5 +11,9 @@ module.exports = {
 
   customerLogout(parent, args, context) {
     return customer.logout(parent, args, context)
+  },
+
+  addProductReview(parent, args, context, info) {
+    return product.addReview(parent, args, context, info)
   },
 }

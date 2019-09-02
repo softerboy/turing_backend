@@ -94,4 +94,12 @@ module.exports = {
       pages: pages,
     }
   },
+
+  atob(data) {
+    return Buffer.from(data, 'base64').toString()
+  },
+
+  btoa(str) {
+    return Buffer.from(str).toString('base64')
+  },
 }

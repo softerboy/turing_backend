@@ -12,4 +12,8 @@ module.exports = {
   categories(parent, args, context, info) {
     return product.categories(parent, args, context, info)
   },
+
+  reviews(parent, args, context, info) {
+    return product.reviews(parent, args, context, info)
+  },
 }

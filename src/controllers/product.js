@@ -1,5 +1,8 @@
 /* eslint-disable camelcase */
-const { paginate } = require('../utils')
+const { ApolloError } = require('apollo-server-koa')
+
+const { validateReviewForm } = require('../validators/review')
+const { paginate, btoa, atob } = require('../utils')
 const { fieldsToColumns } = require('../utils')
 
 async function getPriceBetween(inPrice, db) {
@@ -108,5 +111,68 @@ module.exports = {
 
   find(parent, { product_id }, { loaders }) {
     return loaders.query.product.load(product_id)
+  },
+
+  async addReview(parent, review, { db, koaCtx }) {
+    const { customer } = koaCtx
+
+    // check user is authorized
+    if (!customer) {
+      throw new ApolloError('You are not authorized!!!', 'USR_01')
+    }
+
+    // if validation fails, an exception will be thrown
+    await validateReviewForm(review)
+
+    const tableName = 'review'
+    // insert new review
+    await db(tableName).insert({
+      ...review,
+      customer_id: customer.customer_id,
+      created_on: db.fn.now(),
+    })
+
+    // prettier-ignore
+    const res = await db.raw(`SELECT LAST_INSERT_ID() as review_id FROM ${tableName}`)
+    const { review_id } = res[0][0]
+
+    return db
+      .first()
+      .from(tableName)
+      .where({ review_id })
+  },
+
+  async reviews({ product_id }, args, { db }) {
+    const query = db
+      .select()
+      .from('review')
+      .where('product_id', product_id)
+
+    const perPage = 10
+    const { cursor, count = perPage } = args
+
+    // limit is equal to count plus one.
+    // By setting the limit to one more
+    // than the count requested by the client,
+    // we’ll know we’re at the last page when the
+    // number of rows returned is less than count.
+    // At that point, we’ll return an empty next_cursor
+    // which tells the client there are no more pages to be fetched
+    const limit = count < 0 ? perPage + 1 : count + 1
+
+    if (cursor) query.andWhere('review_id', '<=', atob(cursor))
+
+    const data = await query.limit(limit).orderBy('created_on', 'desc')
+    let next_cursor = null
+    if (data.length === limit) {
+      const lastItem = data.pop()
+      console.log(lastItem)
+      next_cursor = btoa(String(lastItem.review_id))
+    }
+
+    return {
+      data,
+      next_cursor,
+    }
   },
 }

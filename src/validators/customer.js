@@ -1,32 +1,19 @@
 const Schema = require('async-validator')
-const { ValidationError } = require('apollo-server-koa')
 
-const err = (message, code, field, status = 400) => ({
-  message,
-  code,
-  field,
-  status,
-})
-
-const errWrapper = err => {
-  const error = new ValidationError('Validation failed')
-  error.errors = err.errors
-
-  return error
-}
+const { errorBuilder, errorWrapper } = require('../utils/error-handler')
 
 const email = [
   {
     required: true,
-    message: err('The email is required', 'USR_02', 'email'),
+    message: errorBuilder('The email is required', 'USR_02', 'email'),
   },
   {
     type: 'email',
-    message: err('Invalid email', 'USR_07', 'email'),
+    message: errorBuilder('Invalid email', 'USR_07', 'email'),
   },
   {
     max: 100,
-    message: err('Email is too long', 'USR_07', 'email'),
+    message: errorBuilder('Email is too long', 'USR_07', 'email'),
   },
 ]
 
@@ -37,19 +24,19 @@ module.exports = {
       name: [
         {
           required: true,
-          message: err('The name is required', 'USR_02', 'name'),
+          message: errorBuilder('The name is required', 'USR_02', 'name'),
         },
         {
           min: 3,
-          message: err('Name is too short', 'USR_07', 'name'),
+          message: errorBuilder('Name is too short', 'USR_07', 'name'),
         },
         {
           max: 50,
-          message: err('Name is too long', 'USR_07', 'name'),
+          message: errorBuilder('Name is too long', 'USR_07', 'name'),
         },
         {
           pattern: /^[a-zA-Z][a-zA-Z0-9]*(?:\s+[a-zA-Z][a-zA-Z0-9]+)?$/,
-          message: err(
+          message: errorBuilder(
             /* eslint-disable */
             'Name must contain only alphanumeric characters ' +
               "and shouldn't begin with a digit and shouldn't contain special characters",
@@ -67,11 +54,15 @@ module.exports = {
       password: [
         {
           required: true,
-          message: err('The password is required', 'USR_02', 'password'),
+          message: errorBuilder(
+            'The password is required',
+            'USR_02',
+            'password',
+          ),
         },
         {
           pattern: /(?=.*[a-z])/,
-          message: err(
+          message: errorBuilder(
             'The password must contain at least 1 lowercase alphabetical character',
             'USR_07',
             'password',
@@ -79,7 +70,7 @@ module.exports = {
         },
         {
           pattern: /(?=.*[A-Z])/,
-          message: err(
+          message: errorBuilder(
             'The password must contain at least 1 uppercase alphabetical character',
             'USR_07',
             'password',
@@ -87,7 +78,7 @@ module.exports = {
         },
         {
           pattern: /(?=.*[0-9])/,
-          message: err(
+          message: errorBuilder(
             'The password must contain at least 1 numeric character',
             'USR_07',
             'password',
@@ -95,7 +86,7 @@ module.exports = {
         },
         {
           pattern: /(?=.[!@#$%^&])/,
-          message: err(
+          message: errorBuilder(
             'The password must contain at least 1 special character',
             'USR_07',
             'password',
@@ -103,7 +94,7 @@ module.exports = {
         },
         {
           pattern: /^.{6,50}$/,
-          message: err(
+          message: errorBuilder(
             'The password length must be between 6 and 50 characters long',
             'USR_07',
             'password',
@@ -113,7 +104,7 @@ module.exports = {
     }
 
     return new Schema(descriptor).validate(registerForm).catch(err => {
-      throw errWrapper(err)
+      throw errorWrapper(err)
     })
   },
 
@@ -125,12 +116,12 @@ module.exports = {
       // to validating password here
       password: {
         required: true,
-        message: err('The password is required', 'USR_02', 'password'),
+        message: errorBuilder('The password is required', 'USR_02', 'password'),
       },
     }
 
     return new Schema(descriptor).validate(loginForm).catch(err => {
-      throw errWrapper(err)
+      throw errorWrapper(err)
     })
   },
 }

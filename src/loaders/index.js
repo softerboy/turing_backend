@@ -5,4 +5,5 @@ module.exports = {
   department: require('./department')(db, DataLoader),
   product: require('./product')(db, DataLoader),
   query: require('./query')(db, DataLoader),
+  review: require('./review')(db, DataLoader),
 }
