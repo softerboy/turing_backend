@@ -26,6 +26,7 @@ module.exports = (db, DataLoader) => ({
       .from('shopping_cart as sc')
       .innerJoin('product as p', 'p.product_id', 'sc.product_id')
       .whereIn('sc.cart_id', ids)
+      .andWhere('sc.buy_now')
       .then(carts => ids.map(id => carts.filter(cart => cart.cart_id === id)))
   }),
 })
