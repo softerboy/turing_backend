@@ -20,4 +20,8 @@ module.exports = {
   addToCart(parent, args, context) {
     return cart.add(parent, args, context)
   },
+
+  updateCart(parent, args, info) {
+    return cart.update(parent, args, info)
+  },
 }

@@ -61,4 +61,48 @@ module.exports = {
   async get(parent, { cart_id }, { loaders }) {
     return loaders.query.cart.load(cart_id)
   },
+
+  async update(parent, args, context) {
+    const { quantity, item_id } = args
+    const { loaders, db } = context
+
+    const dbCart = await db
+      .first()
+      .from('shopping_cart')
+      .where({ item_id })
+
+    if (quantity > 0) {
+      await db('shopping_cart')
+        .update({ quantity })
+        .where({ item_id })
+
+      // update loader cache
+      const cartLoader = loaders.query.cart
+      cartLoader.clear(dbCart.cart_id)
+
+      // return updated cart products
+      return cartLoader.load(dbCart.cart_id)
+    }
+
+    return this.removeItem(parent, args, context)
+  },
+
+  async removeItem(parent, { item_id }, { db, loaders }) {
+    // save cart_id before removal
+    const { cart_id } = await db
+      .first()
+      .from('shopping_cart')
+      .where({ item_id })
+
+    // remove cart item with given item_id
+    await db('shopping_cart')
+      .where({ item_id })
+      .del()
+
+    // update/unmemoize loaders cache
+    const cartLoader = loaders.query.cart
+    cartLoader.clear(cart_id)
+
+    return cartLoader.load(cart_id)
+  },
 }

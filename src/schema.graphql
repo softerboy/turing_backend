@@ -45,6 +45,8 @@ type Mutation {
   customerLogout: Boolean
 
   addToCart(cart_id: String!, product_id: Int!, attributes: String!): [ShoppingCart!]
+  updateCart(item_id: Int!, quantity: Int!): [ShoppingCart]
+  removeItem(item_id: Int!): [ShoppingCart]
 }
 
 type RegisterResponse {
