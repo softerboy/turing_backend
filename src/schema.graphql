@@ -22,6 +22,8 @@ type Query {
   product(product_id: Int!): Product
 
   generateUniqueCartId: String!
+
+  cart(cart_id: String!): [ShoppingCart]
 }
 
 type Mutation {
@@ -41,6 +43,8 @@ type Mutation {
 
   #  return true if logout success
   customerLogout: Boolean
+
+  addToCart(cart_id: String!, product_id: Int!, attributes: String!): [ShoppingCart!]
 }
 
 type RegisterResponse {
@@ -146,4 +150,15 @@ type ReviewResponse {
   data: [Review]
   # will be null if next page isn't available
   next_cursor: String
+}
+
+type ShoppingCart {
+  item_id: Int!
+  name: String!
+  attributes: String!
+  product_id: Int!
+  price: Float!
+  quantity: Int!
+  image: String!
+  subtotal: Float!
 }

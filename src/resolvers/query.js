@@ -31,11 +31,15 @@ module.exports = {
     return product.all(parent, args, context, info)
   },
 
-  product(parent, args, context, info) {
-    return product.find(parent, args, context, info)
+  product(parent, args, context) {
+    return product.find(parent, args, context)
   },
 
   generateUniqueCartId() {
     return cart.generateUniqueId()
+  },
+
+  cart(parent, args, context, info) {
+    return cart.get(parent, args, context, info)
   },
 }
