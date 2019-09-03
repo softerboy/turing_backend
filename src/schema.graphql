@@ -20,6 +20,8 @@ type Query {
   ): ProductResponse
 
   product(product_id: Int!): Product
+
+  generateUniqueCartId: String!
 }
 
 type Mutation {

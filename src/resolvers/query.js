@@ -1,5 +1,5 @@
 const { createToken } = require('../utils')
-const { department, attribute, product } = require('../controllers')
+const { department, attribute, product, cart } = require('../controllers')
 
 module.exports = {
   me(parent, args, { koaCtx }) {
@@ -33,5 +33,9 @@ module.exports = {
 
   product(parent, args, context, info) {
     return product.find(parent, args, context, info)
+  },
+
+  generateUniqueCartId() {
+    return cart.generateUniqueId()
   },
 }
