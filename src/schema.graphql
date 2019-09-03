@@ -44,9 +44,15 @@ type Mutation {
   #  return true if logout success
   customerLogout: Boolean
 
-  addToCart(cart_id: String!, product_id: Int!, attributes: String!): [ShoppingCart!]
+  addToCart(
+    cart_id: String!
+    product_id: Int!
+    attributes: String!
+  ): [ShoppingCart!]
   updateCart(item_id: Int!, quantity: Int!): [ShoppingCart]
   removeItem(item_id: Int!): [ShoppingCart]
+  # returns an empty array after removal
+  emptyCart(cart_id: String!): [ShoppingCart]
 }
 
 type RegisterResponse {

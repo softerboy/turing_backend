@@ -39,7 +39,7 @@ module.exports = {
     return cart.generateUniqueId()
   },
 
-  cart(parent, args, context, info) {
-    return cart.get(parent, args, context, info)
+  cart(parent, args, context) {
+    return cart.get(parent, args, context)
   },
 }

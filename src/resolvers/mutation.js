@@ -24,4 +24,8 @@ module.exports = {
   updateCart(parent, args, info) {
     return cart.update(parent, args, info)
   },
+
+  emptyCart(parent, args, context) {
+    return cart.empty(parent, args, context)
+  },
 }

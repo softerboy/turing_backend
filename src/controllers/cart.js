@@ -105,4 +105,17 @@ module.exports = {
 
     return cartLoader.load(cart_id)
   },
+
+  async empty(parent, { cart_id }, { db, loaders }) {
+    // clear/unmemoize cart loader cache
+    loaders.query.cart.clear(cart_id)
+
+    // delete shopping cart
+    await db('shopping_cart')
+      .where({ cart_id })
+      .del()
+
+    // return an empty array
+    return []
+  },
 }
