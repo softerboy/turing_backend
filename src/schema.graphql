@@ -24,6 +24,8 @@ type Query {
   generateUniqueCartId: String!
 
   cart(cart_id: String!): [ShoppingCart]
+  getSaved(cart_id: String!): [ShoppingCart]
+  totalAmount(cart_id: String!): Float!
 }
 
 type Mutation {
@@ -53,6 +55,8 @@ type Mutation {
   removeItem(item_id: Int!): [ShoppingCart]
   # returns an empty array after removal
   emptyCart(cart_id: String!): [ShoppingCart]
+  moveToCart(item_id: Int!): [ShoppingCart]
+  saveForLater(item_id: Int!): [ShoppingCart]
 }
 
 type RegisterResponse {

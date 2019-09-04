@@ -1,12 +1,5 @@
-module.exports = (db, DataLoader) => ({
-  product: new DataLoader(ids =>
-    db
-      .select()
-      .from('product')
-      .where('product_id', ids[0]),
-  ),
-
-  cart: new DataLoader(ids => {
+function loadCart(db, DataLoader, buyNow = true) {
+  return new DataLoader(ids => {
     const cols = [
       'sc.item_id',
       'sc.cart_id',
@@ -26,7 +19,19 @@ module.exports = (db, DataLoader) => ({
       .from('shopping_cart as sc')
       .innerJoin('product as p', 'p.product_id', 'sc.product_id')
       .whereIn('sc.cart_id', ids)
-      .andWhere('sc.buy_now')
+      .andWhere('sc.buy_now', buyNow)
       .then(carts => ids.map(id => carts.filter(cart => cart.cart_id === id)))
-  }),
+  })
+}
+
+module.exports = (db, DataLoader) => ({
+  product: new DataLoader(ids =>
+    db
+      .select()
+      .from('product')
+      .where('product_id', ids[0]),
+  ),
+
+  cart: loadCart(db, DataLoader, true),
+  savedCart: loadCart(db, DataLoader, false),
 })

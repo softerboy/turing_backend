@@ -28,4 +28,12 @@ module.exports = {
   emptyCart(parent, args, context) {
     return cart.empty(parent, args, context)
   },
+
+  moveToCart(parent, args, context) {
+    return cart.moveToCart(parent, args, context)
+  },
+
+  saveForLater(parent, args, context) {
+    return cart.saveForLater(parent, args, context)
+  },
 }

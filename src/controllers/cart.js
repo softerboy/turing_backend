@@ -2,6 +2,21 @@
 const { ValidationError } = require('apollo-server-koa')
 const shortid = require('shortid')
 
+const tableName = 'shopping_cart'
+
+function clearCartLoader(loaders, cart_id) {
+  const { cart, savedCart } = loaders.query.cart
+  cart.clear(cart_id)
+  savedCart.clear(cart_id)
+}
+
+function cartByItemId(db, item_id) {
+  return db
+    .first()
+    .from(tableName)
+    .where({ item_id })
+}
+
 module.exports = {
   generateUniqueId() {
     return shortid.generate()
@@ -32,7 +47,7 @@ module.exports = {
     // cart found!
     // update quantity
     if (cart) {
-      await db('shopping_cart')
+      await db(tableName)
         .update({
           quantity: cart.quantity + 1,
           buy_now: true,
@@ -48,12 +63,12 @@ module.exports = {
         added_on: db.fn.now(),
       }
 
-      await db('shopping_cart').insert(newCart)
+      await db(tableName).insert(newCart)
     }
 
     // clear/unmemoize cart loader cache for given cart id
     // because cart data updated
-    await loaders.query.cart.clear(cart_id)
+    loaders.query.cart.clear(cart_id)
 
     return loaders.query.cart.load(cart_id)
   },
@@ -66,22 +81,18 @@ module.exports = {
     const { quantity, item_id } = args
     const { loaders, db } = context
 
-    const dbCart = await db
-      .first()
-      .from('shopping_cart')
-      .where({ item_id })
+    const dbCart = await cartByItemId(item_id)
 
     if (quantity > 0) {
-      await db('shopping_cart')
+      await db(tableName)
         .update({ quantity })
         .where({ item_id })
 
       // update loader cache
-      const cartLoader = loaders.query.cart
-      cartLoader.clear(dbCart.cart_id)
+      clearCartLoader(loaders, dbCart.cart_id)
 
       // return updated cart products
-      return cartLoader.load(dbCart.cart_id)
+      return loaders.query.cart.load(dbCart.cart_id)
     }
 
     return this.removeItem(parent, args, context)
@@ -89,33 +100,83 @@ module.exports = {
 
   async removeItem(parent, { item_id }, { db, loaders }) {
     // save cart_id before removal
-    const { cart_id } = await db
-      .first()
-      .from('shopping_cart')
-      .where({ item_id })
+    const { cart_id } = await cartByItemId(item_id)
 
     // remove cart item with given item_id
-    await db('shopping_cart')
+    await db(tableName)
       .where({ item_id })
       .del()
 
     // update/unmemoize loaders cache
-    const cartLoader = loaders.query.cart
-    cartLoader.clear(cart_id)
+    clearCartLoader(loaders, cart_id)
 
-    return cartLoader.load(cart_id)
+    return loaders.query.cart.load(cart_id)
   },
 
   async empty(parent, { cart_id }, { db, loaders }) {
     // clear/unmemoize cart loader cache
-    loaders.query.cart.clear(cart_id)
+    clearCartLoader(loaders, cart_id)
 
     // delete shopping cart
-    await db('shopping_cart')
+    await db(tableName)
       .where({ cart_id })
       .del()
 
     // return an empty array
     return []
+  },
+
+  async moveToCart(parent, { item_id }, { db, loaders }) {
+    // update shopping cart first
+    await db(tableName)
+      .update({
+        buy_now: true,
+        created_on: db.fn.now(),
+      })
+      .where({ item_id })
+
+    // receive cart id
+    const { cart_id } = await cartByItemId(db, item_id)
+
+    // clear/unmemoize loader cache
+    clearCartLoader(loaders, cart_id)
+
+    return loaders.query.cart.load(cart_id)
+  },
+
+  async saveForLater(parent, { item_id }, { db, loaders }) {
+    await db(tableName)
+      .update({
+        buy_now: false,
+        quantity: 1,
+      })
+      .where({ item_id })
+
+    // receive cart id
+    const { cart_id } = await cartByItemId(db, item_id)
+
+    // clear/unmemoize loader cache
+    clearCartLoader(loaders, cart_id)
+
+    return loaders.query.cart.load(cart_id)
+  },
+
+  async getSaved(parent, { item_id }, { db, loaders }) {
+    const { cart_id } = await cartByItemId(db, item_id)
+    return loaders.query.savedCart.load(cart_id)
+  },
+
+  async totalAmount(parent, { cart_id }, { db }) {
+    const sumCol =
+      'SUM(COALESCE(NULLIF(p.discounted_price, 0), p.price) * sc.quantity) AS total_amount'
+
+    const { total_amount } = await db
+      .first([db.raw(sumCol)])
+      .from(`${tableName} as sc`)
+      .innerJoin('product as p', 'sc.product_id', 'p.product_id')
+      .where('sc.cart_id', cart_id)
+      .andWhere('sc.buy_now', true)
+
+    return Number(total_amount)
   },
 }

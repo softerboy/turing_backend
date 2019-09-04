@@ -42,4 +42,12 @@ module.exports = {
   cart(parent, args, context) {
     return cart.get(parent, args, context)
   },
+
+  getSaved(parent, args, context) {
+    return cart.getSaved(parent, args, context)
+  },
+
+  totalAmount(parent, args, context) {
+    return cart.totalAmount(parent, args, context)
+  },
 }
