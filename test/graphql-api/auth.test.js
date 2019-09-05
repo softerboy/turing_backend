@@ -1,6 +1,13 @@
 require('dotenv-flow').config()
+
 const { tester: Tester } = require('graphql-tester')
-const db = require('../../../src/db')
+const db = require('../../src/db')
+
+const variables = {
+  name: 'customer',
+  email: 'customer@test.com',
+  password: 'PUtS@cr3Hree',
+}
 
 if (process.env.NODE_ENV !== 'test')
   throw new Error(
@@ -10,7 +17,14 @@ if (process.env.NODE_ENV !== 'test')
 
 describe('Customer mutation', () => {
   beforeAll(() => {
-    return db.migrate.down().then(() => db.migrate.latest())
+    return db.migrate
+      .down()
+      .then(() => db.migrate.latest())
+      .then(() =>
+        db('customer')
+          .where('name', variables.name)
+          .del(),
+      )
   })
 
   const tester = Tester({
@@ -50,12 +64,6 @@ describe('Customer mutation', () => {
       customerLogout
     }
   `
-
-  const variables = {
-    name: 'jane',
-    email: 'jane@doe.com',
-    password: 'PUtS@cr3Hree',
-  }
 
   it('should return HTTP 200 code and customer details after register', async () => {
     const response = await tester(

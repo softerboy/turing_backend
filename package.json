@@ -10,7 +10,7 @@
     "dev": "NODE_ENV=local nodemon src/app.js",
     "dev:test": "NODE_ENV=test nodemon src/app.js",
     "start": "NODE_ENV=production node src/app.js",
-    "test": "NODE_ENV=test jest",
+    "test": "jest",
     "knex:test": "NODE_ENV=test knex",
     "lint": "eslint ."
   },
