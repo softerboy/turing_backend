@@ -5,7 +5,7 @@ const shortid = require('shortid')
 const tableName = 'shopping_cart'
 
 function clearCartLoader(loaders, cart_id) {
-  const { cart, savedCart } = loaders.query.cart
+  const { cart, savedCart } = loaders.query
   cart.clear(cart_id)
   savedCart.clear(cart_id)
 }
@@ -81,7 +81,7 @@ module.exports = {
     const { quantity, item_id } = args
     const { loaders, db } = context
 
-    const dbCart = await cartByItemId(item_id)
+    const dbCart = await cartByItemId(db, item_id)
 
     if (quantity > 0) {
       await db(tableName)
@@ -100,7 +100,7 @@ module.exports = {
 
   async removeItem(parent, { item_id }, { db, loaders }) {
     // save cart_id before removal
-    const { cart_id } = await cartByItemId(item_id)
+    const { cart_id } = await cartByItemId(db, item_id)
 
     // remove cart item with given item_id
     await db(tableName)
@@ -131,7 +131,7 @@ module.exports = {
     await db(tableName)
       .update({
         buy_now: true,
-        created_on: db.fn.now(),
+        added_on: db.fn.now(),
       })
       .where({ item_id })
 
@@ -161,8 +161,7 @@ module.exports = {
     return loaders.query.cart.load(cart_id)
   },
 
-  async getSaved(parent, { item_id }, { db, loaders }) {
-    const { cart_id } = await cartByItemId(db, item_id)
+  async getSaved(parent, { cart_id }, { loaders }) {
     return loaders.query.savedCart.load(cart_id)
   },
 

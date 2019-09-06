@@ -45,7 +45,13 @@ module.exports = {
       columns = Array.from(new Set(columns.concat(['customer_id'])))
 
       // 3) generate a jwt access token
-      const savedCustomer = await db.first(columns).from(tableName)
+      const savedCustomer = await db
+        .first(columns)
+        .from(tableName)
+        .where({
+          name: customer.name,
+          email: customer.email,
+        })
       const { customer_id } = savedCustomer
       const { expires_in, accessToken } = generateAccessToken(customer_id)
 

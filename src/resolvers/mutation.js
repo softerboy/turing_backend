@@ -36,4 +36,8 @@ module.exports = {
   saveForLater(parent, args, context) {
     return cart.saveForLater(parent, args, context)
   },
+
+  removeItem(parent, args, context) {
+    return cart.removeItem(parent, args, context)
+  },
 }

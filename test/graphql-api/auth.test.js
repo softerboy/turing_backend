@@ -4,28 +4,19 @@ const { tester: Tester } = require('graphql-tester')
 const db = require('../../src/db')
 
 const variables = {
-  name: 'customer',
-  email: 'customer@test.com',
+  name: 'CustomerWithFakeName',
+  email: 'customer@fake.com',
   password: 'PUtS@cr3Hree',
 }
 
-if (process.env.NODE_ENV !== 'test')
-  throw new Error(
-    `Please run this tests with NODE_ENV=test environment variable,
-     otherwise, your production schema may be lost`,
-  )
+function removeFakeCustomer() {
+  return db('customer')
+    .where('name', variables.name)
+    .del()
+}
 
 describe('Customer mutation', () => {
-  beforeAll(() => {
-    return db.migrate
-      .down()
-      .then(() => db.migrate.latest())
-      .then(() =>
-        db('customer')
-          .where('name', variables.name)
-          .del(),
-      )
-  })
+  beforeAll(() => removeFakeCustomer())
 
   const tester = Tester({
     url: `http://localhost:${process.env.PORT}/graphql`,
@@ -124,5 +115,5 @@ describe('Customer mutation', () => {
     expect(response.data.customerLogout).toBe(true)
   })
 
-  afterAll(() => db.destroy())
+  afterAll(() => removeFakeCustomer().then(() => db.destroy()))
 })
