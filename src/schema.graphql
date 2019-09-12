@@ -26,6 +26,8 @@ type Query {
   cart(cart_id: String!): [ShoppingCart]
   getSaved(cart_id: String!): [ShoppingCart]
   totalAmount(cart_id: String!): Float!
+
+  shippingRegions: [ShippingRegion]
 }
 
 type Mutation {
@@ -173,4 +175,17 @@ type ShoppingCart {
   quantity: Int!
   image: String!
   subtotal: Float!
+}
+
+type ShippingRegion {
+  shipping_region_id: Int!
+  shipping_region: String!
+  shippingTypes: [ShippingType]
+}
+
+type ShippingType {
+  shipping_id: Int!
+  shipping_type: String!
+  shipping_cost: Float!
+  shipping_region_id: Int!
 }

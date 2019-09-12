@@ -58,7 +58,8 @@
   "lint-staged": {
     "*.(js)": [
       "prettier --single-quote --write",
-      "git add"
+      "git add",
+      "eslint ."
     ]
   },
   "nodemonConfig": {

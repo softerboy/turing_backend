@@ -4,4 +4,5 @@ module.exports = {
   department: require('./department'),
   product: require('./product'),
   cart: require('./cart'),
+  shippingRegion: require('./shipping-region'),
 }

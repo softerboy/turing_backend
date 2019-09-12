@@ -1,5 +1,11 @@
 const { createToken } = require('../utils')
-const { department, attribute, product, cart } = require('../controllers')
+const {
+  department,
+  attribute,
+  product,
+  cart,
+  shippingRegion,
+} = require('../controllers')
 
 module.exports = {
   me(parent, args, { koaCtx }) {
@@ -49,5 +55,9 @@ module.exports = {
 
   totalAmount(parent, args, context) {
     return cart.totalAmount(parent, args, context)
+  },
+
+  shippingRegions(parent, args, context) {
+    return shippingRegion.all(parent, args, context)
   },
 }

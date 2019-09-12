@@ -6,4 +6,5 @@ module.exports = {
   product: require('./product')(db, DataLoader),
   query: require('./query')(db, DataLoader),
   review: require('./review')(db, DataLoader),
+  shippingRegion: require('./shipping-region')(db, DataLoader),
 }
