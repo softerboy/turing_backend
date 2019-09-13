@@ -181,6 +181,7 @@ type ShippingRegion {
   shipping_region_id: Int!
   shipping_region: String!
   shippingTypes: [ShippingType]
+  tax: Tax!
 }
 
 type ShippingType {
@@ -188,4 +189,10 @@ type ShippingType {
   shipping_type: String!
   shipping_cost: Float!
   shipping_region_id: Int!
+}
+
+type Tax {
+  tax_id: Int!
+  tax_type: String!
+  tax_percentage: Float!
 }
