@@ -5,4 +5,6 @@ module.exports = {
   product: require('./product'),
   cart: require('./cart'),
   shippingRegion: require('./shipping-region'),
+  order: require('./order'),
+  tax: require('./tax'),
 }

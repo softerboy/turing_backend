@@ -5,6 +5,7 @@ const {
   product,
   cart,
   shippingRegion,
+  order,
 } = require('../controllers')
 
 module.exports = {
@@ -59,5 +60,9 @@ module.exports = {
 
   shippingRegions(parent, args, context) {
     return shippingRegion.all(parent, args, context)
+  },
+
+  orderFee(parent, args, context) {
+    return order.fees(parent, args, context)
   },
 }
