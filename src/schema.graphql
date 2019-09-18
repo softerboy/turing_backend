@@ -65,6 +65,19 @@ type Mutation {
   emptyCart(cart_id: String!): [ShoppingCart]
   moveToCart(item_id: Int!): [ShoppingCart]
   saveForLater(item_id: Int!): [ShoppingCart]
+
+  # returns stripe intent token
+  checkout(
+    cart_id: String!
+    fullname: String!
+    address: String!
+    city: String!
+    state: String!
+    country: String!
+    zip: String!
+    shipping_region_id: Int!
+    shipping_id: Int!
+  ): String!
 }
 
 type RegisterResponse {

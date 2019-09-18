@@ -1,4 +1,4 @@
-const { customer, product, cart } = require('../controllers')
+const { customer, product, cart, order } = require('../controllers')
 
 module.exports = {
   customerRegister(parent, formData, context, info) {
@@ -39,5 +39,9 @@ module.exports = {
 
   removeItem(parent, args, context) {
     return cart.removeItem(parent, args, context)
+  },
+
+  checkout(parent, args, context) {
+    return order.checkout(parent, args, context)
   },
 }
