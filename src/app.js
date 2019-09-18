@@ -34,6 +34,7 @@ const server = new ApolloServer({
 server.applyMiddleware({ app })
 
 const port = process.env.PORT
+// eslint-disable-next-line no-console
 app.listen({ port }, () => console.log(`App listens on port ${port}`))
 
 // required in testing

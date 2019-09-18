@@ -27,7 +27,16 @@ module.exports = {
   },
 
   async all(parent, args, { db }, info) {
-    const { inCategory, inColor, inSize, inPrice, sortBy, page, perPage } = args
+    const {
+      inCategory,
+      inColor,
+      inSize,
+      inPrice,
+      sortBy,
+      page,
+      perPage,
+      search,
+    } = args
 
     const mandatoryFields = ['p.product_id']
     const outsiderFields = ['__typename', 'product_id', 'colors', 'sizes']
@@ -37,6 +46,13 @@ module.exports = {
     )
 
     let query = db.table('product as p')
+
+    if (search && search.length) {
+      query.whereRaw(
+        'MATCH (p.name, p.description) AGAINST (? IN BOOLEAN MODE)',
+        [search],
+      )
+    }
 
     // filter by given category
     if (inCategory && inCategory.length) {
@@ -166,7 +182,6 @@ module.exports = {
     let next_cursor = null
     if (data.length === limit) {
       const lastItem = data.pop()
-      console.log(lastItem)
       next_cursor = btoa(String(lastItem.review_id))
     }
 

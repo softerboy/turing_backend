@@ -17,6 +17,7 @@ type Query {
     sortBy: ProductSort
     page: Int
     perPage: Int
+    search: String
   ): ProductResponse
 
   product(product_id: Int!): Product
