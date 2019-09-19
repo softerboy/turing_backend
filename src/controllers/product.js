@@ -125,8 +125,11 @@ module.exports = {
     return loaders.product.categories.load(product_id)
   },
 
-  find(parent, { product_id }, { loaders }) {
-    return loaders.query.product.load(product_id)
+  find(parent, { product_id }, { loaders, koaCtx }) {
+    return loaders.query.product.load(product_id).catch(error => {
+      koaCtx.response.status = 404
+      throw error
+    })
   },
 
   async addReview(parent, review, { db, koaCtx }) {

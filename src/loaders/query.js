@@ -1,3 +1,5 @@
+const { ApolloError } = require('apollo-server-koa')
+
 function loadCart(db, DataLoader, buyNow = true) {
   return new DataLoader(ids => {
     const cols = [
@@ -29,7 +31,25 @@ module.exports = (db, DataLoader) => ({
     db
       .select()
       .from('product')
-      .where('product_id', ids[0]),
+      .where('product_id', ids[0])
+      .then(rows => {
+        if (rows && rows.length) return rows
+
+        throw new ApolloError(
+          'No product found by given product_id',
+          'PRODUCT_01',
+          {
+            errors: [
+              {
+                code: 'PRODUCT_01',
+                message: 'No product found by given product_id',
+                field: 'product_id',
+                status: 404,
+              },
+            ],
+          },
+        )
+      }),
   ),
 
   cart: loadCart(db, DataLoader, true),
