@@ -8,6 +8,7 @@ const path = require('path')
 
 const typeDefs = importSchema('src/schema.graphql')
 const passportJwtMiddleware = require('./auth/passport-jwt')
+require('./auth/passport-facebook')
 const loaders = require('./loaders')
 const resolvers = require('./resolvers')
 const db = require('./db')

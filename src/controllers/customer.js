@@ -1,6 +1,9 @@
 /* eslint-disable camelcase */
 const { AuthenticationError } = require('apollo-server-koa')
+const shortid = require('shortid')
 
+const authenticateFacebook = require('../auth/passport-facebook')
+const authenticateGoogle = require('../auth/passport-google')
 const { handleError } = require('../utils/error-handler')
 const { fieldsToColumns, createToken, md5 } = require('../utils')
 const {
@@ -109,6 +112,57 @@ module.exports = {
 
       handleError(err)
     }
+  },
+
+  async socialLogin(parent, { service, accessToken }, context, info) {
+    const { koaCtx, db } = context
+
+    koaCtx.request.body = {
+      ...koaCtx.request.body,
+      access_token: accessToken,
+    }
+
+    let authenticator = authenticateFacebook
+    if (service === 'GOOGLE') authenticator = authenticateGoogle
+
+    const { data } = await authenticator(koaCtx)
+
+    if (!data) throw new AuthenticationError('Authentication failed')
+
+    const email = data.profile._json.email
+    let name = null
+    if (service === 'FACEBOOK') {
+      name = data.profile._json.first_name
+    } else {
+      name = data.profile._json.given_name
+    }
+
+    let columns = fieldsToColumns(info, undefined, outsideColumns)
+
+    // anyway include 'password' and 'customer_id' columns,
+    // they are used for comparing form's password and
+    // signing jwt token
+    columns = Array.from(new Set(columns.concat(['password', 'customer_id'])))
+
+    // 2) find user by email
+    const dbCustomer = await db
+      .first(columns)
+      .where({ email })
+      .from('customer')
+
+    // customer found
+    if (dbCustomer) {
+      const { customer_id } = dbCustomer
+      const { expires_in, accessToken } = generateAccessToken(customer_id)
+
+      return { ...dbCustomer, expires_in, accessToken }
+    }
+
+    // customer not found, generate random password
+    // and register a new user
+    const password = shortid.generate() + shortid.generate() + '@23Sa'
+
+    return this.add(parent, { name, email, password }, context, info)
   },
 
   async logout(parent, args, { koaCtx }) {

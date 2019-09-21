@@ -30,11 +30,7 @@ type Query {
 
   shippingRegions: [ShippingRegion]
 
-  orderFee(
-    cart_id: String!
-    shipping_region_id: Int!
-    shipping_id: Int!
-  ): [Fee]
+  orderFee(cart_id: String!, shipping_region_id: Int!, shipping_id: Int!): [Fee]
 }
 
 type Mutation {
@@ -79,6 +75,13 @@ type Mutation {
     shipping_region_id: Int!
     shipping_id: Int!
   ): String!
+
+  socialLogin(service: Social!, accessToken: String!): RegisterResponse
+}
+
+enum Social {
+  FACEBOOK
+  GOOGLE
 }
 
 type RegisterResponse {

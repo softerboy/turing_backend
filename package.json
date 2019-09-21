@@ -47,6 +47,8 @@
     "koa-static": "^5.0.0",
     "lodash.get": "^4.4.2",
     "mysql2": "^1.6.5",
+    "passport-facebook-token": "^3.3.0",
+    "passport-google-token": "^0.1.2",
     "passport-jwt": "^4.0.0",
     "shortid": "^2.2.14",
     "stripe": "^7.9.0"

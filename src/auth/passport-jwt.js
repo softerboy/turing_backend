@@ -26,11 +26,8 @@ const strategy = new Strategy(options, async ({ customer_id }, done) => {
     .where({ customer_id })
     .from(tableName)
 
-  if (user) {
-    done(null, user)
-  } else {
-    done(null, false)
-  }
+  if (user) return done(null, user)
+  return done(null, false)
 })
 
 koaPassport.use(strategy)

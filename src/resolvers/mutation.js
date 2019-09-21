@@ -13,6 +13,10 @@ module.exports = {
     return customer.logout(parent, args, context)
   },
 
+  socialLogin(parent, args, context, info) {
+    return customer.socialLogin(parent, args, context, info)
+  },
+
   addProductReview(parent, args, context) {
     return product.addReview(parent, args, context)
   },
