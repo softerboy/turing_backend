@@ -1,6 +1,7 @@
 require('dotenv-flow').config()
 
 const Koa = require('koa')
+const bodyParser = require('koa-bodyparser')
 const KoaStatic = require('koa-static')
 const { ApolloServer } = require('apollo-server-koa')
 const { importSchema } = require('graphql-import')
@@ -12,6 +13,7 @@ require('./auth/passport-facebook')
 const loaders = require('./loaders')
 const resolvers = require('./resolvers')
 const db = require('./db')
+const router = require('./routes')
 
 const context = ({ ctx: koaCtx }) => ({
   db,
@@ -20,9 +22,11 @@ const context = ({ ctx: koaCtx }) => ({
 })
 
 const app = new Koa()
+app.use(bodyParser())
 // setup passport middleware
 app.use(passportJwtMiddleware)
 app.use(KoaStatic(path.join(__dirname, '..', 'public')))
+app.use(router.routes())
 
 const server = new ApolloServer({
   typeDefs,
