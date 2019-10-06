@@ -3,6 +3,7 @@ require('dotenv-flow').config()
 const Koa = require('koa')
 const bodyParser = require('koa-bodyparser')
 const KoaStatic = require('koa-static')
+const send = require('koa-send')
 const { ApolloServer } = require('apollo-server-koa')
 const { importSchema } = require('graphql-import')
 const path = require('path')
@@ -37,6 +38,14 @@ const server = new ApolloServer({
 })
 
 server.applyMiddleware({ app })
+
+// this last middleware catches any request that isn't handled by
+// koa-static or koa-router, ie your index.html
+app.use(ctx =>
+  send(ctx, 'index.html', {
+    root: path.join(__dirname, '..', 'public'),
+  }),
+)
 
 const port = process.env.PORT
 // eslint-disable-next-line no-console
