@@ -39,7 +39,14 @@ module.exports = {
     } = args
 
     const mandatoryFields = ['p.product_id']
-    const outsiderFields = ['__typename', 'product_id', 'colors', 'sizes']
+    const outsiderFields = [
+      '__typename',
+      'product_id',
+      'colors',
+      'sizes',
+      'reviews',
+      'categories',
+    ]
 
     const columns = new Set(
       fieldsToColumns(info, 'data', outsiderFields).concat(mandatoryFields),
