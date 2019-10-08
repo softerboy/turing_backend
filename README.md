@@ -33,12 +33,6 @@ mysql -u <dbuser> -D <databasename> -p < ./mysql/init_db.sql
 * Run container
 `docker-compose up`
 
-# Run client app (i.e React app)
-* After successfully running backend server, goto `frontend` folder
-* Run `npm install` or `yarn install` to install the React app dependencies
-* Set/modify environment variables in .env file
-* Run `npm start` or `yarn start`
-
 # Running Tests
 
 * Run application with test environment
